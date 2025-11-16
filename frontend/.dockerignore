@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+
+*.log
+*.env
+.env.*
+
+Dockerfile
+docker-compose.yml
+.git
+.vscode
+.idea
+
+.DS_Store
+Thumbs.db
