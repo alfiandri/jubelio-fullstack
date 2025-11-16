@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.input {
+    @apply w-full p-2 rounded bg-slate-800 border border-white/10 outline-none;
+}

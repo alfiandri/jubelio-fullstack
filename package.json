@@ -1,0 +1,20 @@
+{
+    "name": "jubelio-fullstack",
+    "private": true,
+    "workspaces": [
+        "backend",
+        "frontend"
+    ],
+    "scripts": {
+        "install:all": "npm install --workspaces",
+        "build:all": "npm run build --workspaces",
+        "build:backend": "npm --workspace backend run build",
+        "build:frontend": "npm --workspace frontend run build",
+        "docker:build": "docker compose build --no-cache",
+        "docker:up": "docker compose up -d",
+        "docker:down": "docker compose down"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.0"
+    }
+}

@@ -1,0 +1,21 @@
+# dependencies
+node_modules
+
+# builds
+dist
+build
+.next
+out
+
+# logs
+*.log
+
+# env
+.env
+.env.*
+
+# coverage
+coverage
+
+# compiled configs
+*.tsbuildinfo

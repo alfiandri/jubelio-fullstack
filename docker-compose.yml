@@ -1,0 +1,72 @@
+version: "3.9"
+services:
+  db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: jubelio_db
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: jubelio
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d jubelio" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./backend-migrations:/docker-entrypoint-initdb.d
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: jubelio_api
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      HOST: 0.0.0.0
+      PG_HOST: db
+      PG_PORT: 5432
+      PG_DB: jubelio
+      PG_USER: admin
+      PG_PASSWORD: admin
+      JWT_SECRET: supersecretjwt
+      BASIC_USER: admin@demo.local
+      BASIC_PASS: admin123
+      CORS_ORIGIN: http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:3001/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: jubelio_web
+    environment:
+      # inside docker network the backend is reachable via service name "backend"
+      NEXT_PUBLIC_API_BASE: http://backend:3001
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:3000 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  dbdata: {}
