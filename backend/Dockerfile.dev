@@ -1,0 +1,13 @@
+FROM node:24-alpine
+
+WORKDIR /app
+
+COPY backend/package.json backend/package-lock.json ./
+
+RUN npm install --no-audit --no-fund
+
+COPY backend ./
+
+EXPOSE 3001
+
+CMD ["npm", "run", "dev"]

@@ -19,7 +19,10 @@ export default async function itemsRoutes(fastify: FastifyInstance) {
         if (!row) return reply.code(404).send({ message: 'Not found' });
         return row;
     });
-
+    
+    fastify.get('/items/count', async (req, reply) => {
+        return db.one(SQL.countAll).then(row => ({ count: Number(row.count) }));
+    });
 
     fastify.post('/items', async (req, reply) => {
         const b = req.body as any;
