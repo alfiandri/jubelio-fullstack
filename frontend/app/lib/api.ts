@@ -7,16 +7,16 @@ function getToken() {
 }
 
 
-async function request(
-    path: string,
-    options: RequestInit = {}
-) {
+async function request(path: string, options: RequestInit = {}) {
     const token = getToken();
 
     const headers: HeadersInit = {
-        "Content-Type": "application/json",
         ...(options.headers || {})
     };
+
+    if (options.body) {
+        headers["Content-Type"] = "application/json";
+    }
 
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
@@ -26,35 +26,61 @@ async function request(
         cache: "no-store",
     });
 
+    const text = await res.text();
+
     if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(`API ${res.status}: ${txt}`);
+        throw new Error(`API ${res.status}: ${text}`);
     }
 
-    const text = await res.text();
     return text ? JSON.parse(text) : null;
 }
 
-
-
 export const api = {
-    login: (email, password) => request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
-    getItems: () => request('/items'),
+    login: (email, password) =>
+        request('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password }),
+        }),
+
+    getItems: (limit = 20, offset = 0) =>
+        request(`/items?limit=${limit}&offset=${offset}`),
+
     createItem: (data) =>
         request("/items", {
             method: "POST",
             body: JSON.stringify(data),
         }),
+
     updateItem: (id, data) =>
         request(`/items/${id}`, {
             method: "PUT",
             body: JSON.stringify(data),
         }),
+
     deleteItem: (id) =>
         request(`/items/${id}`, {
             method: "DELETE",
         }),
-    getTransactions: () => request('/transactions'),
+
+    createTransaction: (data) =>
+        request("/transactions", {
+            method: "POST",
+            body: JSON.stringify(data),
+        }),
+
+    updateTransaction: (id, data) =>
+        request(`/transactions/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(data),
+        }),
+
+    deleteTransaction: (id) =>
+        request(`/transactions/${id}`, {
+            method: "DELETE",
+        }),
+
+    getTransactions: (limit = 20, offset = 0) =>
+        request(`/transactions?limit=${limit}&offset=${offset}`),
     getSummary: () => request('/summary/monthly'),
     importDummy: () => request('/import/dummyjson', { method: 'POST' }),
 };

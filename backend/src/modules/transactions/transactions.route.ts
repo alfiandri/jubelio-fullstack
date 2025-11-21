@@ -25,6 +25,11 @@ export default async function transactionsRoutes(fastify: FastifyInstance) {
         return reply.send(row);
     });
 
+    fastify.get("/transactions/monthly", async (req: FastifyRequest, reply: FastifyReply) => {
+        const row = await db.one(SQL.transactionsMonthly);
+        return reply.send(row);
+    });
+
     fastify.post("/transactions", async (req: FastifyRequest, reply: FastifyReply) => {
         const body = req.body as any;
         if (!body.item_id || !body.qty) {

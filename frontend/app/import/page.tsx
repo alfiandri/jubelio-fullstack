@@ -26,11 +26,21 @@ export default function ImportPage() {
     return (
         <AnimatedPage>
             <Protected>
-
                 <div className="space-y-6">
-                    <Card>
-                        <h2 className="text-xl font-semibold mb-4">Import DummyJSON</h2>
-                        <Button className="bg-accent text-bg" onClick={doImport}>{loading ? 'Importing...' : 'Import now'}</Button>
+                    <Card title="Import DummyJSON">
+                        <Button
+                            onClick={() => { if (!loading) doImport(); }}
+                            aria-disabled={loading}
+                            className={`relative overflow-hidden bg-gradient-to-r 
+        from-blue-500 to-indigo-600 text-white 
+        px-5 py-2.5 rounded-xl font-semibold 
+        shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 
+        transition-all duration-300 ${loading ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}`}
+                        >
+                            <span className="absolute inset-0 bg-white/20 opacity-0 hover:opacity-10 transition-opacity duration-300"></span>
+                            <span className="relative z-10">{loading ? 'Importing…' : 'Import now'}</span>
+                        </Button>
+
                         {res && <pre className="mt-4 text-sm">{JSON.stringify(res, null, 2)}</pre>}
                     </Card>
                 </div>
